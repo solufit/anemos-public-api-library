@@ -14,7 +14,6 @@ services:
 
   swagger-ui:
     image: swaggerapi/swagger-ui
-    container_name: "swagger-ui"
     ports:
       - "6080:8080"
     volumes:
