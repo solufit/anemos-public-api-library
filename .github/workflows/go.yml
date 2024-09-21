@@ -56,8 +56,7 @@ jobs:
         script: |
           const fs = require('fs');
           const coverage = fs.readFileSync('coverage.txt', 'utf8');
-          const { github, context } = require('@actions/github');
-          github.issues.createComment({
+          github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
