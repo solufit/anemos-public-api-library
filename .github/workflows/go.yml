@@ -55,9 +55,3 @@ jobs:
             repo: context.repo.repo,
             body: coverage
           });
-
-    - name: Upload coverage
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage
-        path: coverage.html
