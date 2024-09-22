@@ -16,3 +16,4 @@ do
     # Markdownのテーブル行として出力
     echo "| $file_path:$line_number | $function_name | $coverage |"
 done
+
