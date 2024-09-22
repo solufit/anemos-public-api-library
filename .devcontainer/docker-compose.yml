@@ -6,16 +6,15 @@ services:
       dockerfile: .devcontainer/Dockerfile
     tty: true
     stdin_open: true
-    command: /bin/bash
+    command: sleep infinity
     volumes:
-      - ./..:/go/src/work
-    ports:
-      - "6000:8000"
+      - ../..:/workspaces:cached
+    environment:
+      - GO111MODULE=on
+      - DATABASE_URL=mysql://root:root@db:3306/test
 
   swagger-ui:
     image: swaggerapi/swagger-ui
-    ports:
-      - "6080:8080"
     volumes:
       - ./../docs/swagger.yaml:/openapi.yaml
     environment:
