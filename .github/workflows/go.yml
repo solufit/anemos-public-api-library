@@ -112,3 +112,4 @@ jobs:
         git add docs/swagger.yaml
         git commit -m "Update OpenAPI" || return 0
         git push
+
