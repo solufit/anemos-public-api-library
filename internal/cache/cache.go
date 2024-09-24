@@ -1,6 +1,7 @@
 package cache
 
 import (
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -17,20 +18,24 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 	var target_data = make(map[id]string)
 
 	// 一週間分のキャッシュデータインデックスを作成する
-	var weekly_data = make(map[eventType][]id)
+	var weekly_data = make(map[eventType]mapset.Set[id])
 
 	// Object Typeの一覧
-	var object_types []eventType
+	var object_types = mapset.NewSet[eventType]()
 
 	// 一週間分のキャッシュデータを作成する
 	for _, data := range anemosData {
 		var object_id id = data.(map[string]interface{})["info_objectId"].(id)
 		var object_type eventType = data.(map[string]interface{})["object_type"].(eventType)
+
 		//objectidをキーにして、データを保存する
 		target_data[object_id] = data.(string)
 
 		//イベントタイプをキーにして、objectidを保存する
-		weekly_data[object_type] = append(weekly_data[object_type], object_id)
+		weekly_data[object_type].Add(object_id)
+
+		//object_typeを保存する
+		object_types.Add(object_type)
 
 	}
 
