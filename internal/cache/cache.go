@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"context"
+
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/redis/go-redis/v9"
 )
@@ -10,6 +12,22 @@ type eventType string
 
 // AnemosイベントID
 type id string
+
+func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[eventType], channel *chan error) {
+
+	// 一週間分のキャッシュデータを作成する
+	ctx := context.Background()
+	_, err := redisClient.SAdd(ctx, "EventType", weekly_data).Result()
+
+	if err != nil {
+		*channel <- err
+		return
+	}
+
+	// キャッシュデータ作成完了を通知する
+	*channel <- nil
+
+}
 
 // APIから取得した情報をもとに、Cacheを作成する
 func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
@@ -37,6 +55,13 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 		//object_typeを保存する
 		object_types.Add(object_type)
 
+	}
+
+	channel := make(chan error)
+
+	go createEventTypeCache(redisClient, &object_types, &channel)
+
+	for key, data := range weekly_data {
 	}
 
 	return nil
