@@ -15,8 +15,9 @@ type id string
 
 func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[eventType], channel *chan error) {
 
-	// 一週間分のキャッシュデータを作成する
 	ctx := context.Background()
+
+	// 一週間分のキャッシュデータを作成する
 	_, err := redisClient.SAdd(ctx, "EventType", weekly_data).Result()
 
 	if err != nil {
