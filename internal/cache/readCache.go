@@ -91,20 +91,20 @@ func GetCache(redisClient *redis.Client, key EventType) ([]string, error) {
 
 	//イベントIDに対応するイベントを取得する
 
-	channelErr := make(chan error)
-	channelResult := make(chan string)
+	channelErr := make(chan error, len(eventIds.ToSlice()))
+	channelResult := make(chan string, len(eventIds.ToSlice()))
 
 	for _, eventId := range eventIds.ToSlice() {
 		go func(eventId Id) {
-			defer close(channelResult)
-			defer close(channelErr)
 
 			event, err := getEventCache(redisClient, eventId)
 			if err != nil {
 				channelErr <- err
+				channelResult <- ""
 				return
 			}
 			channelResult <- event
+			channelErr <- nil
 		}(eventId)
 	}
 
@@ -113,15 +113,24 @@ func GetCache(redisClient *redis.Client, key EventType) ([]string, error) {
 	var event []string
 
 	// イベントデータを取得
-	for result := range channelResult {
+
+	for i := 0; i < len(eventIds.ToSlice()); i++ {
+		result := <-channelResult
+		err := <-channelErr
+
 		event = append(event, result)
-	}
-	for err := range channelErr {
-		errResult = append(errResult, err)
+
+		if err != nil {
+			errResult = append(errResult, err)
+		}
+
 	}
 
+	defer close(channelResult)
+	defer close(channelErr)
+
 	// エラー処理
-	for err := range channelErr {
+	for _, err := range errResult {
 		if err != nil {
 			errResult = append(errResult, err)
 		}
