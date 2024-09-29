@@ -18,7 +18,8 @@ Created by sasanqua and solufit developers
 
 ## ディレクトリ構成
 
-```
+``` 
+tree 
 |- .devcontainer
 |- devcontainer.json                # devcontainerの設定
     |- docker-compose.yml           # 開発コンテナ関連のコンテナ立ち上げ
@@ -144,4 +145,27 @@ dbmate --url mysql://root:root@db:3306/test -d db/seed -s db/schema.sql up
 
 ```bash
 xo schema mysql://root:root@db:3306/test
+```
+
+## ファイル構成
+
+```bash
+tree
+anemos-public-api-library # Please put code user can import in root directory
+├── anemos_public_api_library.go # package Root
+├── go.mod
+├── go.sum
+├── internal
+│   └── cache
+│       ├── cache.go # Write Cache
+│       ├── cache_test.go # Write Cache Test
+│       ├── readCache.go # Read Cache
+│       └── readCache_test.go # Read Cache Test
+├── LICENSE
+├── README.md
+└── scripts
+    └── coverage.sh
+
+4 directories, 10 files
+
 ```
