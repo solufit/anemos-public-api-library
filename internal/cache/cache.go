@@ -3,6 +3,8 @@ package cache
 import (
 	"context"
 
+	"fmt"
+
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/redis/go-redis/v9"
 )
@@ -36,6 +38,23 @@ func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Se
 
 	// 一週間分のキャッシュデータを作成する
 	_, err := redisClient.SAdd(ctx, string(key), event).Result()
+
+	if err != nil {
+		*channel <- err
+		return
+	}
+
+	// キャッシュデータ作成完了を通知する
+	*channel <- nil
+
+}
+
+func createEventCache(redisClient *redis.Client, key Id, event string, channel *chan error) {
+
+	ctx := context.Background()
+
+	// 一週間分のキャッシュデータを作成する
+	_, err := redisClient.Set(ctx, string(key), event, 0).Result()
 
 	if err != nil {
 		*channel <- err
@@ -81,6 +100,22 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 
 	for key, data := range weekly_data {
 		go createWeeklyCache(redisClient, key, data, &channel)
+	}
+
+	for key, data := range target_data {
+		go createEventCache(redisClient, key, data, &channel)
+	}
+
+	var errorSlice []error
+
+	for c := range channel {
+		if c != nil {
+			errorSlice = append(errorSlice, c)
+		}
+	}
+
+	if len(errorSlice) > 0 {
+		return fmt.Errorf("error: %v", errorSlice)
 	}
 
 	return nil
