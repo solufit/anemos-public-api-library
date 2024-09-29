@@ -56,8 +56,8 @@ func TestCreateCache(t *testing.T) {
 
 	// Check if the weekly data is cached
 	for _, data := range anemosData {
-		objectType := data.(map[string]interface{})["object_type"].(string)
-		objectId := data.(map[string]interface{})["info_objectId"].(string)
+		objectType := string(data.(map[string]interface{})["object_type"].(cache.EventType))
+		objectId := string(data.(map[string]interface{})["info_objectId"].(cache.Id))
 		members, err := client.SMembers(context.Background(), objectType).Result()
 		assert.NoError(t, err)
 		assert.Contains(t, members, objectId)
@@ -65,7 +65,7 @@ func TestCreateCache(t *testing.T) {
 
 	// Check if the individual events are cached
 	for _, data := range anemosData {
-		objectId := data.(map[string]interface{})["info_objectId"].(string)
+		objectId := string(data.(map[string]interface{})["info_objectId"].(cache.Id))
 		eventData, err := client.Get(context.Background(), objectId).Result()
 		assert.NoError(t, err)
 		assert.Equal(t, data.(map[string]interface{})["data"].(string), eventData)
