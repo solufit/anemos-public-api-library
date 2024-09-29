@@ -30,12 +30,12 @@ func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[eve
 
 }
 
-func createWeeklyCache(redisClient *redis.Client, key eventType, event id, channel *chan error) {
+func createWeeklyCache(redisClient *redis.Client, key eventType, event mapset.Set[id], channel *chan error) {
 
 	ctx := context.Background()
 
 	// 一週間分のキャッシュデータを作成する
-	_, err := redisClient.SAdd(ctx, string(key), string(event)).Result()
+	_, err := redisClient.SAdd(ctx, string(key), event).Result()
 
 	if err != nil {
 		*channel <- err
@@ -80,6 +80,7 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 	go createEventTypeCache(redisClient, &object_types, &channel)
 
 	for key, data := range weekly_data {
+		go createWeeklyCache(redisClient, key, data, &channel)
 	}
 
 	return nil
