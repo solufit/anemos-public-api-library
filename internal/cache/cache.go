@@ -8,12 +8,12 @@ import (
 )
 
 // Anemosイベントタイプ
-type eventType string
+type EventType string
 
 // AnemosイベントID
-type id string
+type Id string
 
-func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[eventType], channel *chan error) {
+func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[EventType], channel *chan error) {
 
 	ctx := context.Background()
 
@@ -30,7 +30,7 @@ func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[eve
 
 }
 
-func createWeeklyCache(redisClient *redis.Client, key eventType, event mapset.Set[id], channel *chan error) {
+func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Set[Id], channel *chan error) {
 
 	ctx := context.Background()
 
@@ -51,18 +51,18 @@ func createWeeklyCache(redisClient *redis.Client, key eventType, event mapset.Se
 func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 
 	// Redisに保存するデータ
-	var target_data = make(map[id]string)
+	var target_data = make(map[Id]string)
 
 	// 一週間分のキャッシュデータインデックスを作成する
-	var weekly_data = make(map[eventType]mapset.Set[id])
+	var weekly_data = make(map[EventType]mapset.Set[Id])
 
 	// Object Typeの一覧
-	var object_types = mapset.NewSet[eventType]()
+	var object_types = mapset.NewSet[EventType]()
 
 	// 一週間分のキャッシュデータを作成する
 	for _, data := range anemosData {
-		var object_id id = data.(map[string]interface{})["info_objectId"].(id)
-		var object_type eventType = data.(map[string]interface{})["object_type"].(eventType)
+		var object_id Id = data.(map[string]interface{})["info_objectId"].(Id)
+		var object_type EventType = data.(map[string]interface{})["object_type"].(EventType)
 
 		//objectidをキーにして、データを保存する
 		target_data[object_id] = data.(string)
