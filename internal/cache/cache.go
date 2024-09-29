@@ -16,6 +16,7 @@ type EventType string
 type Id string
 
 func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[EventType], channel *chan error) {
+	defer close(*channel)
 
 	ctx := context.Background()
 
@@ -33,6 +34,7 @@ func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[Eve
 }
 
 func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Set[Id], channel *chan error) {
+	defer close(*channel)
 
 	ctx := context.Background()
 
@@ -50,6 +52,7 @@ func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Se
 }
 
 func createEventCache(redisClient *redis.Client, key Id, event string, channel *chan error) {
+	defer close(*channel)
 
 	ctx := context.Background()
 
