@@ -15,8 +15,7 @@ type EventType string
 // AnemosイベントID
 type Id string
 
-func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[EventType], channel *chan error) {
-	defer close(*channel)
+func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[EventType], channel chan error) {
 
 	ctx := context.Background()
 
@@ -24,17 +23,16 @@ func createEventTypeCache(redisClient *redis.Client, weekly_data *mapset.Set[Eve
 	_, err := redisClient.SAdd(ctx, "EventType", weekly_data).Result()
 
 	if err != nil {
-		*channel <- err
+		channel <- err
 		return
 	}
 
 	// キャッシュデータ作成完了を通知する
-	*channel <- nil
+	channel <- nil
 
 }
 
-func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Set[Id], channel *chan error) {
-	defer close(*channel)
+func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Set[Id], channel chan error) {
 
 	ctx := context.Background()
 
@@ -42,17 +40,16 @@ func createWeeklyCache(redisClient *redis.Client, key EventType, event mapset.Se
 	_, err := redisClient.SAdd(ctx, string(key), event).Result()
 
 	if err != nil {
-		*channel <- err
+		channel <- err
 		return
 	}
 
 	// キャッシュデータ作成完了を通知する
-	*channel <- nil
+	channel <- nil
 
 }
 
-func createEventCache(redisClient *redis.Client, key Id, event string, channel *chan error) {
-	defer close(*channel)
+func createEventCache(redisClient *redis.Client, key Id, event string, channel chan error) {
 
 	ctx := context.Background()
 
@@ -60,12 +57,12 @@ func createEventCache(redisClient *redis.Client, key Id, event string, channel *
 	_, err := redisClient.Set(ctx, string(key), event, 0).Result()
 
 	if err != nil {
-		*channel <- err
+		channel <- err
 		return
 	}
 
 	// キャッシュデータ作成完了を通知する
-	*channel <- nil
+	channel <- nil
 
 }
 
@@ -83,37 +80,41 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 
 	// 一週間分のキャッシュデータを作成する
 	for _, data := range anemosData {
-		var object_id Id = data.(map[string]interface{})["info_objectId"].(Id)
-		var object_type EventType = data.(map[string]interface{})["object_type"].(EventType)
+		dataMap := data.(map[string]interface{})
+		var object_id Id = dataMap["info_objectId"].(Id)
+		var object_type EventType = dataMap["object_type"].(EventType)
 
-		//objectidをキーにして、データを保存する
-		target_data[object_id] = data.(string)
+		// objectidをキーにして、データを保存する
+		target_data[object_id] = dataMap["data"].(string)
 
-		//イベントタイプをキーにして、objectidを保存する
+		// イベントタイプをキーにして、objectidを保存する
+		if _, exists := weekly_data[object_type]; !exists {
+			weekly_data[object_type] = mapset.NewSet[Id]()
+		}
 		weekly_data[object_type].Add(object_id)
 
-		//object_typeを保存する
+		// object_typeを保存する
 		object_types.Add(object_type)
-
 	}
 
 	channel := make(chan error)
 
-	go createEventTypeCache(redisClient, &object_types, &channel)
+	go createEventTypeCache(redisClient, &object_types, channel)
 
 	for key, data := range weekly_data {
-		go createWeeklyCache(redisClient, key, data, &channel)
+		go createWeeklyCache(redisClient, key, data, channel)
 	}
 
 	for key, data := range target_data {
-		go createEventCache(redisClient, key, data, &channel)
+		go createEventCache(redisClient, key, data, channel)
 	}
 
 	var errorSlice []error
 
-	for c := range channel {
-		if c != nil {
-			errorSlice = append(errorSlice, c)
+	for i := 0; i < len(weekly_data)+len(target_data)+1; i++ {
+		err := <-channel
+		if err != nil {
+			errorSlice = append(errorSlice, err)
 		}
 	}
 

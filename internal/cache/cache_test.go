@@ -33,13 +33,13 @@ func TestCreateCache(t *testing.T) {
 
 	anemosData := []interface{}{
 		map[string]interface{}{
-			"info_objectId": "1",
-			"object_type":   "type1",
+			"info_objectId": cache.Id("1"),
+			"object_type":   cache.EventType("type1"),
 			"data":          "event1",
 		},
 		map[string]interface{}{
-			"info_objectId": "2",
-			"object_type":   "type2",
+			"info_objectId": cache.Id("2"),
+			"object_type":   cache.EventType("type2"),
 			"data":          "event2",
 		},
 	}
