@@ -1,1 +1,1 @@
-package anemos_public_api_library
+package libanemos
