@@ -9,9 +9,8 @@ type anemosData[T any] interface {
 }
 
 func NewAnemosGet() *AnemosGet {
-	return &AnemosGet{
-		Data: []anemosData[any]{
-			// Add Anemos Data Type Here
-		},
+	anemosget := AnemosGet{
+		Data: []anemosData[any]{},
 	}
+	return &anemosget
 }
