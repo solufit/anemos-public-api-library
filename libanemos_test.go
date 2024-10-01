@@ -10,10 +10,6 @@ func (m mockAnemosData) Filter() anemosData[any] {
 	return m
 }
 
-// Removed the conflicting AnemosGet struct declaration
-
-// Removed the duplicate NewAnemosGet function declaration
-
 func TestNewAnemosGet(t *testing.T) {
 	anemosGet := NewAnemosGet()
 
