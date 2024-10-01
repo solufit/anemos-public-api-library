@@ -1,10 +1,17 @@
 package libanemos
 
-import (
-	"github.com/redis/go-redis/v9"
-	"github.com/solufit/anemos-public-api-library/internal/cache"
-)
+type AnemosGet struct {
+	Data []anemosData[any]
+}
 
-func CreateCache(client *redis.Client, anemosData []interface{}) error {
-	return cache.CreateCache(client, anemosData)
+type anemosData[T any] interface {
+	Filter() anemosData[T]
+}
+
+func NewAnemosGet() *AnemosGet {
+	return &AnemosGet{
+		Data: []anemosData[any]{
+			// Add Anemos Data Type Here
+		},
+	}
 }
