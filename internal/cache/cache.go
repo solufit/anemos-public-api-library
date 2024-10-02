@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"time"
 
 	"fmt"
 
@@ -63,7 +64,9 @@ func createEventCache(redisClient *redis.Client, key Id, event string, channel c
 	ctx := context.Background()
 
 	// 一週間分のキャッシュデータを作成する
-	_, err := redisClient.Set(ctx, string(key), event, 0).Result()
+	day := 7
+	expire := time.Duration(day*24) * time.Hour
+	_, err := redisClient.Set(ctx, string(key), interface{}(event), expire).Result()
 
 	if err != nil {
 		channel <- err
