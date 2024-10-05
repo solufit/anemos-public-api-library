@@ -74,10 +74,26 @@ type WeatherWarning struct {
 	info_object_id string
 }
 
-type WeatherInfoFilter struct {
-	Number    int    `json:"number"`
-	PostCode  string `json:"post_code"`
-	StartDate string `json:"start_date"`
-	EndDate   string `json:"end_date"`
-	Filter    string `json:"filter" enum:"weather-forecast,weather-warning,earthquake"`
+type WeatherWarninglist struct {
+	data []WeatherWarning
+}
+
+type WeatherEarthquakelist struct {
+	data []WeatherWarning
+}
+
+type WeatherForecastlist struct {
+	data []WeatherWarning
+}
+
+func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
+	return m
+}
+
+func (m WeatherForecast) WeatherForecastFilter(filterOption FilterOptions) WeatherForecast {
+	return m
+}
+
+func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
+	return m
 }
