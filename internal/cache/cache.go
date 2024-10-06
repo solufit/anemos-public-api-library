@@ -93,8 +93,8 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 	// 一週間分のキャッシュデータを作成する
 	for _, data := range anemosData {
 		dataMap := data.(map[string]interface{})
-		var object_id Id = dataMap["info_objectId"].(Id)
-		var object_type EventType = dataMap["object_type"].(EventType)
+		var object_id Id = Id(dataMap["info_objectId"].(string))
+		var object_type EventType = EventType(dataMap["object_type"].(string))
 
 		// objectidをキーにして、データを保存する
 		target_data[object_id] = dataMap["data"].(string)
