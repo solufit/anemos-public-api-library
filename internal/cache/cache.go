@@ -97,7 +97,9 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 		var object_type EventType = EventType(dataMap["object_type"].(string))
 
 		// objectidをキーにして、データを保存する
-		target_data[object_id] = data.(string)
+		// convert data to string
+		stringData := fmt.Sprintf("%v", data)
+		target_data[object_id] = stringData
 
 		// イベントタイプをキーにして、objectidを保存する
 		if _, exists := weekly_data[object_type]; !exists {
