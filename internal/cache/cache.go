@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"fmt"
@@ -97,9 +98,13 @@ func CreateCache(redisClient *redis.Client, anemosData []interface{}) error {
 		var object_type EventType = EventType(dataMap["object_type"].(string))
 
 		// objectidをキーにして、データを保存する
-		// convert data to string
-		stringData := fmt.Sprintf("%v", data)
-		target_data[object_id] = stringData
+		// convert data to json
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			return err
+		}
+
+		target_data[object_id] = string(jsonData)
 
 		// イベントタイプをキーにして、objectidを保存する
 		if _, exists := weekly_data[object_type]; !exists {
