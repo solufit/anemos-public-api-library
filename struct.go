@@ -87,7 +87,14 @@ type WeatherForecastlist struct {
 }
 
 func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
-	return m
+	filteredData := make([]WeatherWarning, 0)
+	for _, warning := range m.data {
+		// Apply filter conditions here
+		if warning.reported_at >= filterOption.StartTime.String() && warning.reported_at <= filterOption.EndTime.String() {
+			filteredData = append(filteredData, warning)
+		}
+	}
+	return WeatherWarninglist{data: filteredData}
 }
 
 func (m WeatherForecast) WeatherForecastFilter(filterOption FilterOptions) WeatherForecast {
