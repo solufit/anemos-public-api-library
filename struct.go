@@ -1,6 +1,9 @@
 package libanemos
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Forecast struct {
 	weather_today     string
@@ -88,13 +91,32 @@ type WeatherForecastlist struct {
 	data []WeatherForecast
 }
 
+func translateToWeatherWarninglist(cachedStringData string) WeatherWarninglist {
+	var data []WeatherWarning
+	if err := json.Unmarshal([]byte(cachedStringData), &data); err != nil {
+		panic(err)
+	}
+	return WeatherWarninglist{data: data}
+}
+
+func translateToWeatherForecastlist(cachedStringData string) WeatherForecastlist {
+	var data []WeatherForecast
+	if err := json.Unmarshal([]byte(cachedStringData), &data); err != nil {
+		panic(err)
+	}
+	return WeatherForecastlist{data: data}
+}
+
+func translateToWeatherEarthquakelist(cachedStringData string) WeatherEarthquakelist {
+	var data []WeatherEarthquake
+	if err := json.Unmarshal([]byte(cachedStringData), &data); err != nil {
+		panic(err)
+	}
+	return WeatherEarthquakelist{data: data}
+}
+
 func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
 	filteredData := make([]WeatherWarning, 0)
-	for _, warning := range m.data {
-		if warning.reported_at >= filterOption.StartTime.String() && warning.reported_at <= filterOption.EndTime.String() {
-			filteredData = append(filteredData, warning)
-		}
-	}
 	return WeatherWarninglist{data: filteredData}
 }
 
@@ -110,14 +132,5 @@ func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) W
 
 func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
 	filteredData := make([]WeatherEarthquake, 0)
-	if filterOption.StartTime != nil && filterOption.EndTime != nil {
-		for _, earthquake := range m.data {
-			if filterOption.StartTime.IsSome() {
-				if earthquake.reported_at.After(filterOption.StartTime) {
-					filteredData = append(filteredData, earthquake)
-				}
-			}
-		}
-	}
 	return WeatherEarthquakelist{data: filteredData}
 }

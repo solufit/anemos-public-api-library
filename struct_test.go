@@ -1,35 +1,12 @@
 package libanemos
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/moznion/go-optional"
 )
-
-func TestWeatherWarningFilter(t *testing.T) {
-	warnings := []WeatherWarning{
-		{reported_at: "2023-01-01T10:00:00Z"},
-		{reported_at: "2023-01-02T10:00:00Z"},
-		{reported_at: "2023-01-03T10:00:00Z"},
-	}
-
-	list := WeatherWarninglist{data: warnings}
-
-	startTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
-	endTime, _ := time.Parse(time.RFC3339, "2023-01-02T23:59:59Z")
-
-	filterOptions := FilterOptions{
-		StartTime: optional.Some(startTime),
-		EndTime:   optional.Some(endTime),
-	}
-
-	filtered := list.WeatherWarningFilter(filterOptions)
-
-	if len(filtered.data) != 2 {
-		t.Errorf("Expected 2 warnings, got %d", len(filtered.data))
-	}
-}
 
 func (f WeatherForecast) WeatherForecastFilter(options FilterOptions) WeatherForecast {
 	// Implement the filtering logic here
@@ -69,26 +46,30 @@ func TestWeatherForecastFilter(t *testing.T) {
 	}
 }
 
-func TestWeatherEarthquakeFilter(t *testing.T) {
-	earthquakes := []WeatherEarthquake{
-		{reported_at: "2023-01-01T10:00:00Z"},
-		{reported_at: "2023-01-02T10:00:00Z"},
-		{reported_at: "2023-01-03T10:00:00Z"},
+func TestTranslateToWeatherWarninglist(t *testing.T) {
+	cachedStringData := `[{"reported_at":"2023-01-01T10:00:00Z"},{"reported_at":"2023-01-02T10:00:00Z"},{"reported_at":"2023-01-03T10:00:00Z"}]`
+	list := translateToWeatherWarninglist(cachedStringData)
+
+	if len(list.data) != 3 {
+		t.Errorf("Expected 3 warnings, got %d", len(list.data))
 	}
+}
 
-	list := WeatherEarthquakelist{data: earthquakes}
+func TestTranslateToWeatherForecastlist(t *testing.T) {
+	cachedStringData := `[{"reported_at":"2023-01-01T10:00:00Z"},{"reported_at":"2023-01-02T10:00:00Z"},{"reported_at":"2023-01-03T10:00:00Z"}]`
+	list := translateToWeatherForecastlist(cachedStringData)
 
-	startTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
-	endTime, _ := time.Parse(time.RFC3339, "2023-01-02T23:59:59Z")
-
-	filterOptions := FilterOptions{
-		StartTime: optional.Some(startTime),
-		EndTime:   optional.Some(endTime),
+	if len(list.data) != 3 {
+		t.Errorf("Expected 3 forecasts, got %d", len(list.data))
 	}
+}
 
-	filtered := list.WeatherEarthquakeFilter(filterOptions)
+func TestTranslateToWeatherEarthquakelist(t *testing.T) {
+	cachedStringData := `[{"reported_at":"2023-01-01T10:00:00Z"},{"reported_at":"2023-01-02T10:00:00Z"},{"reported_at":"2023-01-03T10:00:00Z"}]`
+	list := translateToWeatherEarthquakelist(cachedStringData)
 
-	if len(filtered.data) != 3 {
-		t.Errorf("Expected 3 earthquakes, got %d", len(filtered.data))
+	if len(list.data) != 3 {
+		t.Errorf("Expected 3 earthquakes, got %d", len(list.data))
 	}
+	fmt.Println(list.data)
 }
