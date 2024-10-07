@@ -1,7 +1,6 @@
 package libanemos
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -71,5 +70,4 @@ func TestTranslateToWeatherEarthquakelist(t *testing.T) {
 	if len(list.data) != 3 {
 		t.Errorf("Expected 3 earthquakes, got %d", len(list.data))
 	}
-	fmt.Println(list.data)
 }
