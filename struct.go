@@ -89,7 +89,6 @@ type WeatherForecastlist struct {
 func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
 	filteredData := make([]WeatherWarning, 0)
 	for _, warning := range m.data {
-		// Apply filter conditions here
 		if warning.reported_at >= filterOption.StartTime.String() && warning.reported_at <= filterOption.EndTime.String() {
 			filteredData = append(filteredData, warning)
 		}
@@ -110,7 +109,6 @@ func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) W
 func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
 	filteredData := make([]WeatherEarthquake, 0)
 	for _, earthquake := range m.data {
-		// Apply filter conditions here
 		if earthquake.reported_at >= filterOption.StartTime.String() && earthquake.reported_at <= filterOption.EndTime.String() {
 			filteredData = append(filteredData, earthquake)
 		}
