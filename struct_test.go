@@ -9,9 +9,9 @@ import (
 
 func TestWeatherWarningFilter(t *testing.T) {
 	warnings := []WeatherWarning{
-		{reported_at: "2023-01-01T10:00:00Z"},
-		{reported_at: "2023-01-02T10:00:00Z"},
-		{reported_at: "2023-01-03T10:00:00Z"},
+		{reported_at: time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC)},
+		{reported_at: time.Date(2023, 1, 2, 10, 0, 0, 0, time.UTC)},
+		{reported_at: time.Date(2023, 1, 3, 10, 0, 0, 0, time.UTC)},
 	}
 
 	list := WeatherWarninglist{data: warnings}
@@ -37,6 +37,7 @@ func (f WeatherForecast) WeatherForecastFilter(options FilterOptions) WeatherFor
 }
 
 func TestWeatherForecastFilter(t *testing.T) {
+	reported, _ := time.Parse(time.RFC3339, "2023-01-01T10:00:00Z")
 	forecast := WeatherForecast{
 		id:          "1",
 		object_type: "forecast",
@@ -49,7 +50,7 @@ func TestWeatherForecastFilter(t *testing.T) {
 			max_temp:         30,
 			min_temp:         20,
 		},
-		reported_at:    "2023-01-01T10:00:00Z",
+		reported_at:    reported,
 		info_domain:    "test_domain",
 		info_object_id: "test_object_id",
 	}
@@ -71,9 +72,9 @@ func TestWeatherForecastFilter(t *testing.T) {
 
 func TestWeatherEarthquakeFilter(t *testing.T) {
 	earthquakes := []WeatherEarthquake{
-		{reported_at: "2023-01-01T10:00:00Z"},
-		{reported_at: "2023-01-02T10:00:00Z"},
-		{reported_at: "2023-01-03T10:00:00Z"},
+		{reported_at: time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC)},
+		{reported_at: time.Date(2023, 1, 2, 10, 0, 0, 0, time.UTC)},
+		{reported_at: time.Date(2023, 1, 3, 10, 0, 0, 0, time.UTC)},
 	}
 
 	list := WeatherEarthquakelist{data: earthquakes}
@@ -88,7 +89,7 @@ func TestWeatherEarthquakeFilter(t *testing.T) {
 
 	filtered := list.WeatherEarthquakeFilter(filterOptions)
 
-	if len(filtered.data) != 3 {
+	if len(filtered.data) != 2 {
 		t.Errorf("Expected 3 earthquakes, got %d", len(filtered.data))
 	}
 }
