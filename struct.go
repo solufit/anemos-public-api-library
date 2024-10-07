@@ -88,7 +88,7 @@ type WeatherForecastlist struct {
 	data []WeatherForecast
 }
 
-func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
+func (m WeatherWarninglist) Filter(filterOption FilterOptions) WeatherWarninglist {
 	filteredData := make([]WeatherWarning, 0)
 	filteredData = append(filteredData, m.data...)
 
@@ -120,7 +120,7 @@ func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) Wea
 	return WeatherWarninglist{data: filteredData}
 }
 
-func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) WeatherForecastlist {
+func (m WeatherForecastlist) Filter(filterOption FilterOptions) WeatherForecastlist {
 	filteredData := make([]WeatherForecast, 0)
 
 	filteredData = append(filteredData, m.data...)
@@ -153,7 +153,7 @@ func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) W
 	return WeatherForecastlist{data: filteredData}
 }
 
-func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
+func (m WeatherEarthquakelist) Filter(filterOption FilterOptions) WeatherEarthquakelist {
 	filteredData := make([]WeatherEarthquake, 0)
 	filteredData = append(filteredData, m.data...)
 

@@ -24,21 +24,16 @@ func TestWeatherWarningFilter(t *testing.T) {
 		EndTime:   optional.Some(endTime),
 	}
 
-	filtered := list.WeatherWarningFilter(filterOptions)
+	filtered := list.Filter(filterOptions)
 
 	if len(filtered.data) != 2 {
 		t.Errorf("Expected 2 warnings, got %d", len(filtered.data))
 	}
 }
 
-func (f WeatherForecast) WeatherForecastFilter(options FilterOptions) WeatherForecast {
-	// Implement the filtering logic here
-	return f
-}
-
 func TestWeatherForecastFilter(t *testing.T) {
-	reported, _ := time.Parse(time.RFC3339, "2023-01-01T10:00:00Z")
-	forecast := WeatherForecast{
+	reported := time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC)
+	forecast := []WeatherForecast{{
 		id:          "1",
 		object_type: "forecast",
 		areacode:    "123",
@@ -53,7 +48,9 @@ func TestWeatherForecastFilter(t *testing.T) {
 		reported_at:    reported,
 		info_domain:    "test_domain",
 		info_object_id: "test_object_id",
-	}
+	}}
+
+	forecastlist := WeatherForecastlist{data: forecast}
 
 	startTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
 	endTime, _ := time.Parse(time.RFC3339, "2023-01-02T23:59:59Z")
@@ -63,10 +60,10 @@ func TestWeatherForecastFilter(t *testing.T) {
 		EndTime:   optional.Some(endTime),
 	}
 
-	filtered := forecast.WeatherForecastFilter(filterOptions)
+	filtered := forecastlist.Filter(filterOptions)
 
-	if filtered.id != "1" {
-		t.Errorf("Expected forecast id to be '1', got '%s'", filtered.id)
+	if len(filtered.data) != 1 {
+		t.Errorf("Expected forecast items to be '1', got '%d'", len(filtered.data))
 	}
 }
 
@@ -87,7 +84,7 @@ func TestWeatherEarthquakeFilter(t *testing.T) {
 		EndTime:   optional.Some(endTime),
 	}
 
-	filtered := list.WeatherEarthquakeFilter(filterOptions)
+	filtered := list.Filter(filterOptions)
 
 	if len(filtered.data) != 2 {
 		t.Errorf("Expected 3 earthquakes, got %d", len(filtered.data))
