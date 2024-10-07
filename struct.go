@@ -79,11 +79,11 @@ type WeatherWarninglist struct {
 }
 
 type WeatherEarthquakelist struct {
-	data []WeatherWarning
+	data []WeatherEarthquake
 }
 
 type WeatherForecastlist struct {
-	data []WeatherWarning
+	data []WeatherForecast
 }
 
 func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
@@ -97,10 +97,23 @@ func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) Wea
 	return WeatherWarninglist{data: filteredData}
 }
 
-func (m WeatherForecast) WeatherForecastFilter(filterOption FilterOptions) WeatherForecast {
-	return m
+func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) WeatherForecastlist {
+	filteredData := make([]WeatherForecast, 0)
+	for _, forecast := range m.data {
+		if forecast.reported_at >= filterOption.StartTime.String() && forecast.reported_at <= filterOption.EndTime.String() {
+			filteredData = append(filteredData, forecast)
+		}
+	}
+	return WeatherForecastlist{data: filteredData}
 }
 
 func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
-	return m
+	filteredData := make([]WeatherEarthquake, 0)
+	for _, earthquake := range m.data {
+		// Apply filter conditions here
+		if earthquake.reported_at >= filterOption.StartTime.String() && earthquake.reported_at <= filterOption.EndTime.String() {
+			filteredData = append(filteredData, earthquake)
+		}
+	}
+	return WeatherEarthquakelist{data: filteredData}
 }
