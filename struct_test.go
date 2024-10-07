@@ -67,11 +67,10 @@ func TestWeatherForecastFilter(t *testing.T) {
 	}
 }
 
-
 func TestTranslateToWeatherWarninglist(t *testing.T) {
 	cachedStringData := `[{"reported_at":"2023-01-01T10:00:00Z"},{"reported_at":"2023-01-02T10:00:00Z"},{"reported_at":"2023-01-03T10:00:00Z"}]`
 	list := translateToWeatherWarninglist(cachedStringData)
-  	if len(list.data) != 3 {
+	if len(list.data) != 3 {
 		t.Errorf("Expected 3 warnings, got %d", len(list.data))
 	}
 }
@@ -83,9 +82,8 @@ func TestWeatherEarthquakeFilter(t *testing.T) {
 		{reported_at: time.Date(2023, 1, 3, 10, 0, 0, 0, time.UTC)},
 	}
 
-
-	if len(list.data) != 3 {
-		t.Errorf("Expected 3 warnings, got %d", len(list.data))
+	if len(earthquakes) != 3 {
+		t.Errorf("Expected 3 warnings, got %d", len(earthquakes))
 	}
 }
 

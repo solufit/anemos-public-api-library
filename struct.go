@@ -117,7 +117,7 @@ func translateToWeatherEarthquakelist(cachedStringData string) WeatherEarthquake
 
 func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
 	filteredData := make([]WeatherWarning, 0)
-  return WeatherWarninglist{data: filteredData}
+	return WeatherWarninglist{data: filteredData}
 }
 
 func (m WeatherWarninglist) Filter(filterOption FilterOptions) WeatherWarninglist {
@@ -186,6 +186,8 @@ func (m WeatherForecastlist) Filter(filterOption FilterOptions) WeatherForecastl
 }
 
 func (m WeatherEarthquakelist) Filter(filterOption FilterOptions) WeatherEarthquakelist {
+	filteredData := make([]WeatherEarthquake, 0)
+
 	filteredData = append(filteredData, m.data...)
 
 	if filterOption.StartTime != nil {
