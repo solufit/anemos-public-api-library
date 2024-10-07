@@ -1,5 +1,7 @@
 package libanemos
 
+import "time"
+
 type Forecast struct {
 	weather_today     string
 	weather_tommorow  string
@@ -57,7 +59,7 @@ type WeatherEarthquake struct {
 	title          string
 	status         string
 	detail         Earthquake
-	reported_at    string
+	reported_at    time.Time
 	info_domain    string
 	info_object_id string
 }
@@ -69,7 +71,7 @@ type WeatherWarning struct {
 	title          string
 	status         string
 	detail         Warning
-	reported_at    string
+	reported_at    time.Time
 	info_domain    string
 	info_object_id string
 }
@@ -108,9 +110,13 @@ func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) W
 
 func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
 	filteredData := make([]WeatherEarthquake, 0)
-	for _, earthquake := range m.data {
-		if earthquake.reported_at >= filterOption.StartTime.String() && earthquake.reported_at <= filterOption.EndTime.String() {
-			filteredData = append(filteredData, earthquake)
+	if filterOption.StartTime != nil && filterOption.EndTime != nil {
+		for _, earthquake := range m.data {
+			if filterOption.StartTime.IsSome() {
+				if earthquake.reported_at.After(filterOption.StartTime) {
+					filteredData = append(filteredData, earthquake)
+				}
+			}
 		}
 	}
 	return WeatherEarthquakelist{data: filteredData}
