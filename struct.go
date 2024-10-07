@@ -16,7 +16,7 @@ type Forecast struct {
 	rain_percent_18h  int
 	rain_percent_24h  int
 	publishing_office string
-	reported_time     string
+	reported_time     time.Time
 }
 
 type Earthquake struct {
@@ -25,7 +25,7 @@ type Earthquake struct {
 	editorial_office  string
 	publishing_office string
 	category          string
-	datetime          string
+	datetime          time.Time
 	headline          string
 	hypocenter        string
 	region_code       string
@@ -38,7 +38,7 @@ type Warning struct {
 	editorial_office  string
 	publishing_office string
 	category          string
-	datetime          string
+	datetime          time.Time
 	headline          string
 	pref              string
 }
@@ -50,7 +50,7 @@ type WeatherForecast struct {
 	title          string
 	status         string
 	detail         Forecast
-	reported_at    string
+	reported_at    time.Time
 	info_domain    string
 	info_object_id string
 }
@@ -117,20 +117,101 @@ func translateToWeatherEarthquakelist(cachedStringData string) WeatherEarthquake
 
 func (m WeatherWarninglist) WeatherWarningFilter(filterOption FilterOptions) WeatherWarninglist {
 	filteredData := make([]WeatherWarning, 0)
+  return WeatherWarninglist{data: filteredData}
+}
+
+func (m WeatherWarninglist) Filter(filterOption FilterOptions) WeatherWarninglist {
+	filteredData := make([]WeatherWarning, 0)
+	filteredData = append(filteredData, m.data...)
+
+	if filterOption.StartTime != nil {
+		tmp_data := make([]WeatherWarning, 0)
+		for _, weather := range m.data {
+			if filterOption.StartTime.IsSome() {
+				startTime, _ := filterOption.StartTime.Take()
+				if startTime.Before(weather.reported_at) {
+					tmp_data = append(tmp_data, weather)
+				}
+			}
+		}
+		filteredData = tmp_data
+	}
+
+	if filterOption.EndTime != nil {
+		tmp_data := make([]WeatherWarning, 0)
+		for _, weather := range m.data {
+			if filterOption.EndTime.IsSome() {
+				EndTime, _ := filterOption.EndTime.Take()
+				if EndTime.After(weather.reported_at) {
+					tmp_data = append(tmp_data, weather)
+				}
+			}
+		}
+		filteredData = tmp_data
+	}
 	return WeatherWarninglist{data: filteredData}
 }
 
-func (m WeatherForecastlist) WeatherForecastFilter(filterOption FilterOptions) WeatherForecastlist {
+func (m WeatherForecastlist) Filter(filterOption FilterOptions) WeatherForecastlist {
 	filteredData := make([]WeatherForecast, 0)
-	for _, forecast := range m.data {
-		if forecast.reported_at >= filterOption.StartTime.String() && forecast.reported_at <= filterOption.EndTime.String() {
-			filteredData = append(filteredData, forecast)
+
+	filteredData = append(filteredData, m.data...)
+
+	if filterOption.StartTime != nil {
+		tmp_data := make([]WeatherForecast, 0)
+		for _, weather := range m.data {
+			if filterOption.StartTime.IsSome() {
+				startTime, _ := filterOption.StartTime.Take()
+				if startTime.Before(weather.reported_at) {
+					tmp_data = append(tmp_data, weather)
+				}
+			}
 		}
+		filteredData = tmp_data
+	}
+
+	if filterOption.EndTime != nil {
+		tmp_data := make([]WeatherForecast, 0)
+		for _, weather := range m.data {
+			if filterOption.EndTime.IsSome() {
+				EndTime, _ := filterOption.EndTime.Take()
+				if EndTime.After(weather.reported_at) {
+					tmp_data = append(tmp_data, weather)
+				}
+			}
+		}
+		filteredData = tmp_data
 	}
 	return WeatherForecastlist{data: filteredData}
 }
 
-func (m WeatherEarthquakelist) WeatherEarthquakeFilter(filterOption FilterOptions) WeatherEarthquakelist {
-	filteredData := make([]WeatherEarthquake, 0)
+func (m WeatherEarthquakelist) Filter(filterOption FilterOptions) WeatherEarthquakelist {
+	filteredData = append(filteredData, m.data...)
+
+	if filterOption.StartTime != nil {
+		tmp_data := make([]WeatherEarthquake, 0)
+		for _, earthquake := range m.data {
+			if filterOption.StartTime.IsSome() {
+				startTime, _ := filterOption.StartTime.Take()
+				if startTime.Before(earthquake.reported_at) {
+					tmp_data = append(tmp_data, earthquake)
+				}
+			}
+		}
+		filteredData = tmp_data
+	}
+
+	if filterOption.EndTime != nil {
+		tmp_data := make([]WeatherEarthquake, 0)
+		for _, earthquake := range m.data {
+			if filterOption.EndTime.IsSome() {
+				EndTime, _ := filterOption.EndTime.Take()
+				if EndTime.After(earthquake.reported_at) {
+					tmp_data = append(tmp_data, earthquake)
+				}
+			}
+		}
+		filteredData = tmp_data
+	}
 	return WeatherEarthquakelist{data: filteredData}
 }
